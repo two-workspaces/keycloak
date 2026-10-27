@@ -1,0 +1,8 @@
+{
+  "name": "Keycloak | Open-Source SSO & Identity Provider (OIDC, SAML)",
+  "short_name": "Keycloak SSO",
+  "description": "Single sign-on and identity on Postgres 17, admin created on first boot",
+  "category": "Authentication",
+  "image": "https://raw.githubusercontent.com/two-workspaces/keycloak/main/icon.svg",
+  "card_desc": "Keycloak: open-source single sign-on and identity provider with OIDC, OAuth 2.0 and SAML. Runs Keycloak 26.8.1, pre-built for Postgres 17, with the admin created on first boot."
+}

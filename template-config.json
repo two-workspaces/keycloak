@@ -1,0 +1,135 @@
+{
+ "buckets": {},
+ "services": {
+  "6c86d34c-0a66-48cb-8d03-12640d70729c": {
+   "icon": "https://raw.githubusercontent.com/two-workspaces/keycloak/main/icon.svg",
+   "name": "Keycloak",
+   "build": {
+    "dockerfilePath": "Dockerfile"
+   },
+   "deploy": {
+    "startCommand": null,
+    "healthcheckPath": "/realms/master/.well-known/openid-configuration",
+    "healthcheckTimeout": 300,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+   },
+   "source": {
+    "repo": "https://github.com/two-workspaces/keycloak",
+    "rootDirectory": null
+   },
+   "networking": {
+    "serviceDomains": {
+     "<hasDomain>": {}
+    }
+   },
+   "volumeMounts": {},
+   "variables": {
+    "KC_BOOTSTRAP_ADMIN_USERNAME": {
+     "defaultValue": "admin",
+     "description": "Username of the bootstrap admin in the master realm, created on the first boot only.",
+     "isOptional": false
+    },
+    "KC_BOOTSTRAP_ADMIN_PASSWORD": {
+     "defaultValue": "${{secret(24, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\")}}",
+     "description": "Bootstrap admin password, generated at deploy time and used on the first boot only.",
+     "isOptional": false
+    },
+    "KC_HOSTNAME": {
+     "defaultValue": "https://${{RAILWAY_PUBLIC_DOMAIN}}",
+     "description": "Public URL Keycloak puts in tokens and redirects. Change it if you add a custom domain.",
+     "isOptional": false
+    },
+    "KC_PROXY_HEADERS": {
+     "defaultValue": "xforwarded",
+     "description": "Trust Railway's X-Forwarded-* headers (TLS ends at Railway's edge) - leave as is.",
+     "isOptional": false
+    },
+    "KC_HTTP_ENABLED": {
+     "defaultValue": "true",
+     "description": "Plain HTTP behind Railway's TLS proxy - leave as is.",
+     "isOptional": false
+    },
+    "KC_HTTP_PORT": {
+     "defaultValue": "8080",
+     "description": "HTTP port - leave as is.",
+     "isOptional": false
+    },
+    "PORT": {
+     "defaultValue": "8080",
+     "description": "HTTP port Railway routes to - leave as is.",
+     "isOptional": false
+    },
+    "KC_DB_URL": {
+     "defaultValue": "jdbc:postgresql://${{Postgres.RAILWAY_PRIVATE_DOMAIN}}:5432/${{Postgres.POSTGRES_DB}}",
+     "description": "Postgres JDBC URL (private network)",
+     "isOptional": false
+    },
+    "KC_DB_USERNAME": {
+     "defaultValue": "${{Postgres.POSTGRES_USER}}",
+     "description": "Postgres user",
+     "isOptional": false
+    },
+    "KC_DB_PASSWORD": {
+     "defaultValue": "${{Postgres.POSTGRES_PASSWORD}}",
+     "description": "Postgres password",
+     "isOptional": false
+    },
+    "JAVA_OPTS_KC_HEAP": {
+     "defaultValue": "-Xms64m -Xmx768m -XX:MaxHeapFreeRatio=20 -XX:MinHeapFreeRatio=10 -XX:G1PeriodicGCInterval=60000",
+     "description": "JVM heap: capped at 768 MB and handed back when idle. Raise -Xmx for many realms or heavy traffic.",
+     "isOptional": false
+    }
+   }
+  },
+  "7229acfb-b23d-4ca3-a8a6-35cf36cf3b6c": {
+   "icon": "https://devicons.railway.app/i/postgresql.svg",
+   "name": "Postgres",
+   "build": {},
+   "deploy": {
+    "startCommand": null,
+    "healthcheckPath": null,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+   },
+   "source": {
+    "image": "postgres:17.11-alpine"
+   },
+   "networking": {
+    "serviceDomains": {}
+   },
+   "volumeMounts": {
+    "cd26a979-dde8-4a3e-b976-b33d9eced2b1": {
+     "mountPath": "/var/lib/postgresql/data"
+    }
+   },
+   "variables": {
+    "POSTGRES_DB": {
+     "defaultValue": "keycloak",
+     "description": "Database name",
+     "isOptional": false
+    },
+    "POSTGRES_USER": {
+     "defaultValue": "keycloak",
+     "description": "Database user",
+     "isOptional": false
+    },
+    "POSTGRES_PASSWORD": {
+     "defaultValue": "${{secret(32, \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\")}}",
+     "description": "Auto-generated database password",
+     "isOptional": false
+    },
+    "PGDATA": {
+     "defaultValue": "/var/lib/postgresql/data/pgdata",
+     "description": "Data subdirectory - keeps Postgres happy on Railway volumes",
+     "isOptional": false
+    },
+    "RAILWAY_DEPLOYMENT_DRAINING_SECONDS": {
+     "defaultValue": "60",
+     "description": "Time for Postgres to shut down cleanly on redeploy",
+     "isOptional": false
+    }
+   }
+  }
+ }
+}
