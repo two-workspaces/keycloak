@@ -6,5 +6,8 @@ RUN /opt/keycloak/bin/kc.sh build
 
 FROM quay.io/keycloak/keycloak:26.8.1
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
+# Single node: no JGroups discovery (it would try to join the old container
+# during every redeploy).
+ENV KC_CACHE=local
 ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
 CMD ["start", "--optimized"]
