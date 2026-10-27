@@ -5,5 +5,6 @@
   "category": "Authentication",
   "image": "https://raw.githubusercontent.com/two-workspaces/keycloak/main/icon.svg",
   "card_desc": "Keycloak: open-source single sign-on and identity provider with OIDC, OAuth 2.0 and SAML. Runs Keycloak 26.8.1, pre-built for Postgres 17, with the admin created on first boot.",
-  "id": "64202b11-3bdc-4822-aaa5-b1c05baae2fc"
+  "id": "64202b11-3bdc-4822-aaa5-b1c05baae2fc",
+  "published": true
 }
