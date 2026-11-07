@@ -2,13 +2,13 @@
 
 [![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/new/template/keycloak-sso?referralCode=sLjDXb&utm_medium=integration&utm_source=button&utm_campaign=keycloak-sso)
 
-[Keycloak](https://www.keycloak.org/) is the open-source identity and access management server from the Cloud Native Computing Foundation. It adds single sign-on to your apps over OpenID Connect, OAuth 2.0 and SAML 2.0, with user federation (LDAP, Active Directory), social and enterprise login, two-factor authentication, passkeys, fine-grained authorization and a full admin console. This template runs Keycloak 26.8.1 in production mode on its own Postgres 17 and creates the admin account on first boot.
+[Keycloak](https://www.keycloak.org/) is the open-source identity and access management server from the Cloud Native Computing Foundation. It adds single sign-on to your apps over OpenID Connect, OAuth 2.0 and SAML 2.0, with user federation (LDAP, Active Directory), social and enterprise login, two-factor authentication, passkeys, fine-grained authorization and a full admin console. This template runs Keycloak 26.8.2 in production mode on its own Postgres 17 and creates the admin account on first boot.
 
 ## About Hosting Keycloak
 
 The stack is two services: Keycloak and Postgres.
 
-- **Upstream's image, pinned and pre-built.** Keycloak runs the official `quay.io/keycloak/keycloak` image at a fixed release (26.8.1), not `latest`. The wrapper ([source](https://github.com/two-workspaces/keycloak)) runs Keycloak's own build step for Postgres at image build time, so every boot is `start --optimized` and takes about ten seconds.
+- **Upstream's image, pinned and pre-built.** Keycloak runs the official `quay.io/keycloak/keycloak` image at a fixed release (26.8.2), not `latest`. The wrapper ([source](https://github.com/two-workspaces/keycloak)) runs Keycloak's own build step for Postgres at image build time, so every boot is `start --optimized` and takes about ten seconds.
 - **Production mode behind Railway's TLS.** Keycloak trusts Railway's forwarded headers and uses your Railway domain as its hostname, so tokens, redirects and the login pages all carry the right `https://` URL.
 - **Admin on first boot.** The master realm admin is created from `KC_BOOTSTRAP_ADMIN_USERNAME` and the generated `KC_BOOTSTRAP_ADMIN_PASSWORD`, so the public URL never shows an open setup page.
 - **Single node, no clustering noise.** Keycloak runs with its local cache, so a redeploy doesn't try to form a cluster with the container it replaces.
@@ -41,6 +41,8 @@ The stack is two services: Keycloak and Postgres.
 **Email.** Password resets and email verification need SMTP, and Railway only allows outbound SMTP on the Pro plan. Set your provider per realm in Realm settings, Email.
 
 **Custom domains.** Add the domain to the Keycloak service in Railway, then set `KC_HOSTNAME` to `https://your.domain` and redeploy. Update your apps' issuer URLs to match.
+
+**Service accounts and the Admin API (26.8.2+).** The Admin REST API now only accepts tokens issued for it. The admin console and `admin-cli` get the new `kc-admin-api` client scope automatically, so they keep working. If your own clients or service accounts call the Admin API, add `kc-admin-api` to each one's client scopes (Clients, your client, Client scopes, Add client scope, Default), or their calls get `401 Unauthorized`. The same release requires manage-realm permission to create or change protocol mappers through the Admin API. See Keycloak's [26.8.2 migration notes](https://www.keycloak.org/docs/latest/upgrading/#migrating-to-26-8-2).
 
 **Memory.** For many realms, many users or heavy login traffic, raise `-Xmx` in `JAVA_OPTS_KC_HEAP`.
 
